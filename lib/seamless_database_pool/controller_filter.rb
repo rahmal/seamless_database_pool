@@ -62,7 +62,9 @@ module SeamlessDatabasePool
     # a master connection block. It is made available just in case you have special needs that don't quite fit
     # into this module's default logic.
     def use_master_db_connection_on_next_request
-      session[:next_request_db_connection] = :master if session
+      # wbh the problem with this idea is that it means every action in every controller will be obligated to create a
+    	# session.  It's not worth the trade-off, imho
+      #session[:next_request_db_connection] = :master if session
     end
     
     def seamless_database_pool_options
@@ -71,10 +73,10 @@ module SeamlessDatabasePool
     
     def process_action_with_seamless_database_pool(method_name, *args)
       read_pool_method = nil
-      if session
-        read_pool_method = session[:next_request_db_connection]
-        session[:next_request_db_connection] = nil
-      end
+      #if session
+      #  read_pool_method = session[:next_request_db_connection]
+      #  session[:next_request_db_connection] = nil
+      #end
       
       read_pool_method ||= seamless_database_pool_options[action_name.to_sym] || seamless_database_pool_options[:all]
       if read_pool_method
